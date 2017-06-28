@@ -36,20 +36,20 @@ public class UserService {
 			throw new InvalidArgumentPassedException();
 		}
 		
-//		if (exists(user.getCredentials().getUsername())) {
-//			
-//			TweetUser tUser = getUser(user.getCredentials().getUsername());
-//			
-//			if (tUser.getCredentials().getPassword().equals(user.getCredentials().getPassword()) 
-//					&& tUser.getIsActive().equals(false)) {
-//				tUser.setIsActive(true);
-//				return tUser;
-//				
-//			} else if (tUser.getCredentials().getPassword().equals(user.getCredentials().getPassword()) 
-//					&& tUser.getIsActive().equals(true)) {
-//				return userRepository.save(tUser);
-//			} 
-//		} 
+		if (exists(user.getCredentials().getUsername())) {
+			
+			TweetUser tUser = getUser(user.getCredentials().getUsername());
+			
+			if (tUser.getCredentials().getPassword().equals(user.getCredentials().getPassword()) 
+					&& tUser.getIsActive().equals(false)) {
+				tUser.setIsActive(true);
+				return tUser;
+				
+			} else if (tUser.getCredentials().getPassword().equals(user.getCredentials().getPassword()) 
+					&& tUser.getIsActive().equals(true)) {
+				return userRepository.save(tUser);
+			} 
+		} 
 		
 		return userRepository.save(user);
 	}

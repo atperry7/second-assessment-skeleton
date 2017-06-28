@@ -62,7 +62,7 @@ public class TweetService {
 			if (sp.startsWith("@")) {
 				String username = sp.substring(1);
 				log.debug(username);
-				if (uRepo.findByCredentials_UsernameAndIsActiveEquals(username, true)) {
+				if (uRepo.findByCredentials_UsernameAndIsActiveEquals(username, true) != null) {
 					tweetUsers.add(uRepo.findByCredentials_Username(username));
 				}
 			}
@@ -104,7 +104,11 @@ public class TweetService {
 		return null;
 	}
 
-	public List<HashTag> getTagsFromTweet(Integer id) {
-		return new ArrayList<>(tRepo.findOne(id).getLabels());
+	public Set<HashTag> getTagsFromTweet(Integer id) {
+		return tRepo.findOne(id).getLabels();
+	}
+
+	public Set<TweetUser> getUsersMentioned(Integer id) {
+		return tRepo.findOne(id).getMentions();
 	}
 }
