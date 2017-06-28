@@ -1,6 +1,7 @@
 package com.cooksys.secondassessment.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -9,12 +10,16 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cooksys.secondassessment.dto.TweetCreateSimpleDto;
+import com.cooksys.secondassessment.dto.TweetWithIdDto;
 import com.cooksys.secondassessment.entity.HashTag;
 import com.cooksys.secondassessment.entity.Tweet;
 import com.cooksys.secondassessment.entity.TweetUser;
+import com.cooksys.secondassessment.mapper.TweetMapper;
 import com.cooksys.secondassessment.service.TweetService;
 
 @RestController
@@ -22,18 +27,23 @@ import com.cooksys.secondassessment.service.TweetService;
 public class TweetController {
 	
 	private TweetService tService;
+	private TweetMapper tMapper;
 
-	public TweetController(TweetService tService) {
+	public TweetController(TweetService tService, TweetMapper tMapper) {
 		this.tService = tService;
+		this.tMapper = tMapper;
 	}
 	
 	@GetMapping("tweets")
-	public List<Tweet> getAll(HttpServletResponse response) {
-		return tService.getAll();
+	public List<TweetWithIdDto> getAll(HttpServletResponse response) {
+		return tService.getAll()
+				.stream()
+				.map(tMapper::tWithIdDto)
+				.collect(Collectors.toList());
 	}
 	
 	@PostMapping("tweets")
-	public Tweet createSimpTweet(HttpServletResponse response) {
+	public Tweet createSimpTweet(@RequestBody TweetCreateSimpleDto tweet, HttpServletResponse response) {
 		throw new NotYetImplementedException();
 	}
 	
