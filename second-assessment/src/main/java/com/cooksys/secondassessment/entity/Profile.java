@@ -7,7 +7,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotBlank;
 
 @Entity
 public class Profile {
@@ -20,7 +21,7 @@ public class Profile {
 
 	private String lastName;
 
-	@NotNull
+	@NotBlank
 	private String email;
 
 	private String phone;

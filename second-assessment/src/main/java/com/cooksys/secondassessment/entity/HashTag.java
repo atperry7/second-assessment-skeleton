@@ -1,12 +1,14 @@
 package com.cooksys.secondassessment.entity;
 
-import java.sql.Timestamp;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -22,11 +24,13 @@ public class HashTag {
 	private String label;
 
 	@CreationTimestamp
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(updatable = false)
-	private Timestamp firstUsed;
+	private Date firstUsed;
 
 	@UpdateTimestamp
-	private Timestamp lastUsed;
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date lastUsed;
 
 	public String getLabel() {
 		return label;
@@ -36,19 +40,19 @@ public class HashTag {
 		this.label = label;
 	}
 
-	public Timestamp getFirstUsed() {
+	public Date getFirstUsed() {
 		return firstUsed;
 	}
 
-	public void setFirstUsed(Timestamp firstUsed) {
+	public void setFirstUsed(Date firstUsed) {
 		this.firstUsed = firstUsed;
 	}
 
-	public Timestamp getLastUsed() {
+	public Date getLastUsed() {
 		return lastUsed;
 	}
 
-	public void setLastUsed(Timestamp lastUsed) {
+	public void setLastUsed(Date lastUsed) {
 		this.lastUsed = lastUsed;
 	}
 

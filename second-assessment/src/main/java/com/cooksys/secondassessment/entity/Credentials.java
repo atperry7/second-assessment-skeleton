@@ -8,7 +8,7 @@ public class Credentials {
 	
 	@Column(unique = true)
 	private String username;
-
+	
 	private String password;
 
 	public String getUsername() {

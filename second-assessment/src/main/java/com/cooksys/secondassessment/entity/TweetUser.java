@@ -1,9 +1,11 @@
 package com.cooksys.secondassessment.entity;
 
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,8 +13,11 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.Persistent;
 
 @Entity
 public class TweetUser {
@@ -21,14 +26,16 @@ public class TweetUser {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
+	@Embedded
 	private Credentials credentials;
 
-	@ManyToOne
+	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	private Profile profile;
 
 	@CreationTimestamp
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(updatable = false)
-	private Timestamp joined;
+	private Date joined;
 
 	@ManyToMany
 	private Set<TweetUser> followersOfUser;
@@ -49,11 +56,11 @@ public class TweetUser {
 		this.id = id;
 	}
 
-	public Timestamp getJoined() {
+	public Date getJoined() {
 		return joined;
 	}
 
-	public void setJoined(Timestamp joined) {
+	public void setJoined(Date joined) {
 		this.joined = joined;
 	}
 
