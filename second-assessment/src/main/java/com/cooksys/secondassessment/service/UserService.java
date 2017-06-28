@@ -1,6 +1,8 @@
 package com.cooksys.secondassessment.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -72,16 +74,16 @@ public class UserService {
 
 	public void followUser(String username, TweetUserCredOnlyDto creds) {
 		TweetUser user = userRepository.findByCredentials_UsernameAndCredentials_Password(creds.getCredentials().getUsername(), creds.getCredentials().getPassword());
-		if (user != null && exists(username)) {
+		if (user != null && exists(username) && user.getIsActive().equals(true)) {
 			
 			TweetUser userToFollow = getUser(username);
 			
-			if (!userToFollow.getFollowersOfUser().contains(user)) {
+			if (!userToFollow.getFollowersOfUser().contains(user) && userToFollow.getIsActive().equals(true)) {
 				userToFollow.getFollowersOfUser().add(user);
 				save(userToFollow);
 			}
 			
-			if (!user.getUserFollowing().contains(userToFollow)) {
+			if (!user.getUserFollowing().contains(userToFollow) && userToFollow.getIsActive().equals(true)) {
 				user.getUserFollowing().add(userToFollow);
 				save(user);
 			}
@@ -89,6 +91,45 @@ public class UserService {
 		} else {
 			throw new EntityNotFoundException();
 		}
+	}
+
+	public void unfollowUser(String username, TweetUserCredOnlyDto creds) {
+		TweetUser user = userRepository.findByCredentials_UsernameAndCredentials_Password(creds.getCredentials().getUsername(), creds.getCredentials().getPassword());
+		if (user != null && exists(username) && user.getIsActive().equals(true)) {
+			
+			TweetUser userToFollow = getUser(username);
+			
+			if (!userToFollow.getFollowersOfUser().contains(user) && userToFollow.getIsActive().equals(true)) {
+				userToFollow.getFollowersOfUser().remove(user);
+				save(userToFollow);
+			}
+			
+			if (!user.getUserFollowing().contains(userToFollow) && userToFollow.getIsActive().equals(true)) {
+				user.getUserFollowing().remove(userToFollow);
+				save(user);
+			}
+			
+		} else {
+			throw new EntityNotFoundException();
+		}
+		
+	}
+
+	public List<TweetUser> getFollowers(String username) {
+		
+		if (exists(username)) {
+			return getUser(username).getFollowersOfUser().stream().filter(user -> user.getIsActive().equals(true)).collect(Collectors.toList());
+		}
+		
+		throw new EntityNotFoundException();
+	}
+
+	public List<TweetUser> getUserFollowing(String username) {
+		if (exists(username)) {
+			return getUser(username).getUserFollowing().stream().filter(user -> user.getIsActive().equals(true)).collect(Collectors.toList());
+		}
+		
+		throw new EntityNotFoundException();
 	}
 	
 	

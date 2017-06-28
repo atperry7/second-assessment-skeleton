@@ -98,8 +98,9 @@ public class UserController {
 	}
 	
 	@PostMapping("users/@{username}/unfollow")
-	public void unfollowUser(@PathVariable String username, HttpServletResponse response) {
-		throw new NotYetImplementedException();
+	public void unfollowUser(@RequestBody TweetUserCredOnlyDto creds, @PathVariable String username, HttpServletResponse response) {
+		response.setStatus(HttpServletResponse.SC_FOUND);
+		uService.unfollowUser(username, creds);
 	}
 	
 	@GetMapping("users/@{username}/feed")
@@ -119,12 +120,12 @@ public class UserController {
 	
 	@GetMapping("users/@{username}/followers")
 	public List<TweetUser> getUserFollowers(@PathVariable String username, HttpServletResponse response) {
-		throw new NotYetImplementedException();
+		return uService.getFollowers(username);
 	}
 	
 	@GetMapping("users/@{username}/following")
 	public List<TweetUser> getUserFollowing(@PathVariable String username, HttpServletResponse response) {
-		throw new NotYetImplementedException();
+		return uService.getUserFollowing(username);
 	}
 	
 }
