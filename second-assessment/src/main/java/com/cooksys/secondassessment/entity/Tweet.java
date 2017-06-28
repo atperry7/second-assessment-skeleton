@@ -1,6 +1,7 @@
 package com.cooksys.secondassessment.entity;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -42,10 +43,10 @@ public class Tweet {
 	private Boolean isDeleted = false;
 
 	@ManyToMany(fetch = FetchType.LAZY)
-	private Set<TweetUser> mentions;
+	private Set<TweetUser> mentions = new HashSet<>();
 
 	@ManyToMany(fetch = FetchType.LAZY)
-	private Set<HashTag> labels;
+	private Set<HashTag> labels = new HashSet<>();
 	
 	@ManyToMany(mappedBy="likedTweets", fetch = FetchType.LAZY)
 	private Set<TweetUser> usersWhoLiked;

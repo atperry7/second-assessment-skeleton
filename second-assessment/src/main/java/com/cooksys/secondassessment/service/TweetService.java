@@ -1,5 +1,6 @@
 package com.cooksys.secondassessment.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -77,12 +78,12 @@ public class TweetService {
 			if (sp.startsWith("#")) {
 				String label = sp.substring(1);
 				log.debug(label);
-				if (hRepo.findByLabelEquals(label)) {
+				if (hRepo.findByLabelEquals(label) != null) {
 					hashTags.add(hRepo.findByLabel(label));
 				} else {
 					HashTag hashTag = new HashTag();
 					hashTag.setLabel(label);
-					hRepo.save(hashTags);
+					hashTags.add(hRepo.save(hashTag));
 				}
 			}
 		}
@@ -101,5 +102,9 @@ public class TweetService {
 			return tweet;
 		}
 		return null;
+	}
+
+	public List<HashTag> getTagsFromTweet(Integer id) {
+		return new ArrayList<>(tRepo.findOne(id).getLabels());
 	}
 }

@@ -14,12 +14,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cooksys.secondassessment.dto.HashTagNoIdDto;
 import com.cooksys.secondassessment.dto.TweetCreateSimpleDto;
 import com.cooksys.secondassessment.dto.TweetSimpleDto;
 import com.cooksys.secondassessment.dto.TweetWithIdDto;
 import com.cooksys.secondassessment.entity.HashTag;
 import com.cooksys.secondassessment.entity.Tweet;
 import com.cooksys.secondassessment.entity.TweetUser;
+import com.cooksys.secondassessment.mapper.HashTagMapper;
 import com.cooksys.secondassessment.mapper.TweetMapper;
 import com.cooksys.secondassessment.service.TweetService;
 
@@ -29,10 +31,12 @@ public class TweetController {
 	
 	private TweetService tService;
 	private TweetMapper tMapper;
+	private HashTagMapper hMapper;
 
-	public TweetController(TweetService tService, TweetMapper tMapper) {
+	public TweetController(TweetService tService, TweetMapper tMapper, HashTagMapper hMapper) {
 		this.tService = tService;
 		this.tMapper = tMapper;
+		this.hMapper = hMapper;
 	}
 	
 	@GetMapping("tweets")
@@ -74,8 +78,8 @@ public class TweetController {
 	}
 	
 	@GetMapping("tweets/{id}/tags")
-	public List<HashTag> getTagsForTweetById(@PathVariable Integer id, HttpServletResponse response) {
-		throw new NotYetImplementedException();
+	public List<HashTagNoIdDto> getTagsForTweetById(@PathVariable Integer id, HttpServletResponse response) {
+		return tService.getTagsFromTweet(id).stream().map(hMapper::hashTagNoIdDto).collect(Collectors.toList());
 	}
 	
 	@GetMapping("tweets/{id}/likes")
