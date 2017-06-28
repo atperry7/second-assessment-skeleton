@@ -1,6 +1,5 @@
 package com.cooksys.secondassessment.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,14 +10,15 @@ import com.cooksys.secondassessment.entity.TweetUser;
 import com.cooksys.secondassessment.exception.EntityNotFoundException;
 import com.cooksys.secondassessment.exception.InvalidArgumentPassedException;
 import com.cooksys.secondassessment.exception.UsernameExistsException;
+import com.cooksys.secondassessment.mapper.TweetUserMapper;
 import com.cooksys.secondassessment.repository.UserRepository;
 
 @Service
 public class UserService {
 	
 	private UserRepository userRepository;
-
-	public UserService(UserRepository userRepository) {
+	
+	public UserService(UserRepository userRepository, TweetUserMapper tMapper) {
 		this.userRepository = userRepository;
 	}
 
@@ -49,9 +49,7 @@ public class UserService {
 					&& tUser.getIsActive().equals(true)) {
 				return userRepository.save(tUser);
 			} 
-		} else {
-			throw new UsernameExistsException();
-		}
+		} 
 		
 		return userRepository.save(user);
 	}
@@ -73,7 +71,10 @@ public class UserService {
 	}
 
 	public void followUser(String username, TweetUserCredOnlyDto creds) {
-		TweetUser user = userRepository.findByCredentials_UsernameAndCredentials_Password(creds.getCredentials().getUsername(), creds.getCredentials().getPassword());
+		TweetUser user = userRepository
+				.findByCredentials_UsernameAndCredentials_Password(
+						creds.getCredentials().getUsername(), creds.getCredentials().getPassword());
+		
 		if (user != null && exists(username) && user.getIsActive().equals(true)) {
 			
 			TweetUser userToFollow = getUser(username);
@@ -94,7 +95,10 @@ public class UserService {
 	}
 
 	public void unfollowUser(String username, TweetUserCredOnlyDto creds) {
-		TweetUser user = userRepository.findByCredentials_UsernameAndCredentials_Password(creds.getCredentials().getUsername(), creds.getCredentials().getPassword());
+		TweetUser user = userRepository
+				.findByCredentials_UsernameAndCredentials_Password(
+						creds.getCredentials().getUsername(), creds.getCredentials().getPassword());
+		
 		if (user != null && exists(username) && user.getIsActive().equals(true)) {
 			
 			TweetUser userToFollow = getUser(username);
@@ -118,7 +122,9 @@ public class UserService {
 	public List<TweetUser> getFollowers(String username) {
 		
 		if (exists(username)) {
-			return getUser(username).getFollowersOfUser().stream().filter(user -> user.getIsActive().equals(true)).collect(Collectors.toList());
+			return getUser(username).getFollowersOfUser().stream()
+					.filter(user -> user.getIsActive().equals(true))
+					.collect(Collectors.toList());
 		}
 		
 		throw new EntityNotFoundException();
@@ -126,7 +132,9 @@ public class UserService {
 
 	public List<TweetUser> getUserFollowing(String username) {
 		if (exists(username)) {
-			return getUser(username).getUserFollowing().stream().filter(user -> user.getIsActive().equals(true)).collect(Collectors.toList());
+			return getUser(username).getUserFollowing().stream()
+					.filter(user -> user.getIsActive().equals(true))
+					.collect(Collectors.toList());
 		}
 		
 		throw new EntityNotFoundException();

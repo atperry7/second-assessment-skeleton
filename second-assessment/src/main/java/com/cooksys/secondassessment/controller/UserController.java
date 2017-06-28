@@ -22,8 +22,6 @@ import com.cooksys.secondassessment.dto.TweetUserCredOnlyDto;
 import com.cooksys.secondassessment.dto.TweetUserDto;
 import com.cooksys.secondassessment.entity.Tweet;
 import com.cooksys.secondassessment.entity.TweetUser;
-import com.cooksys.secondassessment.exception.InvalidArgumentPassedException;
-import com.cooksys.secondassessment.exception.UsernameExistsException;
 import com.cooksys.secondassessment.mapper.TweetUserMapper;
 import com.cooksys.secondassessment.service.UserService;
 
@@ -58,7 +56,10 @@ public class UserController {
 	@GetMapping("users")
 	public List<TweetUserDto> getAll(HttpServletResponse response) {
 		response.setStatus(HttpServletResponse.SC_ACCEPTED);
-		return uService.getAll().stream().filter(user -> user.getIsActive().equals(true)).map(tMapper::tUserDto).collect(Collectors.toList());
+		return uService.getAll().stream()
+				.filter(user -> user.getIsActive().equals(true))
+				.map(tMapper::tUserDto)
+				.collect(Collectors.toList());
 	}
 	
 	@PostMapping("users")
@@ -114,18 +115,22 @@ public class UserController {
 	}
 	
 	@GetMapping("users/@{username}/mentions")
-	public List<Tweet> getUserMentions(@PathVariable String username, HttpServletResponse response) {
+	public List<TweetUserDto> getUserMentions(@PathVariable String username, HttpServletResponse response) {
 		throw new NotYetImplementedException();
 	}
 	
 	@GetMapping("users/@{username}/followers")
-	public List<TweetUser> getUserFollowers(@PathVariable String username, HttpServletResponse response) {
-		return uService.getFollowers(username);
+	public List<TweetUserDto> getUserFollowers(@PathVariable String username, HttpServletResponse response) {
+		return uService.getFollowers(username).stream()
+				.map(tMapper::tUserDto)
+				.collect(Collectors.toList());
 	}
 	
 	@GetMapping("users/@{username}/following")
-	public List<TweetUser> getUserFollowing(@PathVariable String username, HttpServletResponse response) {
-		return uService.getUserFollowing(username);
+	public List<TweetUserDto> getUserFollowing(@PathVariable String username, HttpServletResponse response) {
+		return uService.getUserFollowing(username).stream()
+				.map(tMapper::tUserDto)
+				.collect(Collectors.toList());
 	}
 	
 }

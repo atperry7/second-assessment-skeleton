@@ -1,15 +1,20 @@
 package com.cooksys.secondassessment.entity;
 
-import java.sql.Timestamp;
+import java.util.Date;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 public class Tweet {
@@ -19,8 +24,9 @@ public class Tweet {
 	private Integer id;
 
 	@CreationTimestamp
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(updatable = false)
-	private Timestamp posted;
+	private Date posted;
 
 	@ManyToOne
 	private TweetUser author;
@@ -33,6 +39,12 @@ public class Tweet {
 
 	private Boolean isDeleted = false;
 
+	@ManyToMany
+	private Set<TweetUser> mentions;
+
+	@ManyToMany
+	private Set<HashTag> labels;
+
 	public Integer getId() {
 		return id;
 	}
@@ -41,11 +53,11 @@ public class Tweet {
 		this.id = id;
 	}
 
-	public Timestamp getPosted() {
+	public Date getPosted() {
 		return posted;
 	}
 
-	public void setPosted(Timestamp posted) {
+	public void setPosted(Date posted) {
 		this.posted = posted;
 	}
 
@@ -87,6 +99,22 @@ public class Tweet {
 
 	public void setAuthor(TweetUser author) {
 		this.author = author;
+	}
+
+	public Set<TweetUser> getMentions() {
+		return mentions;
+	}
+
+	public void setMentions(Set<TweetUser> mentions) {
+		this.mentions = mentions;
+	}
+
+	public Set<HashTag> getLabels() {
+		return labels;
+	}
+
+	public void setLabels(Set<HashTag> labels) {
+		this.labels = labels;
 	}
 
 	@Override

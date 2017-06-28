@@ -31,9 +31,7 @@ public class HashTag {
 	@UpdateTimestamp
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastUsed;
-
-	private Boolean isDeleted = false;
-
+	
 	public String getLabel() {
 		return label;
 	}
@@ -89,14 +87,6 @@ public class HashTag {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
-	}
-
-	public Boolean getIsDeleted() {
-		return isDeleted;
-	}
-
-	public void setIsDeleted(Boolean isDeleted) {
-		this.isDeleted = isDeleted;
 	}
 
 }

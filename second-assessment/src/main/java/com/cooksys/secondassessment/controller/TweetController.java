@@ -15,14 +15,21 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cooksys.secondassessment.entity.HashTag;
 import com.cooksys.secondassessment.entity.Tweet;
 import com.cooksys.secondassessment.entity.TweetUser;
+import com.cooksys.secondassessment.service.TweetService;
 
 @RestController
 @RequestMapping("tweet")
 public class TweetController {
 	
+	private TweetService tService;
+
+	public TweetController(TweetService tService) {
+		this.tService = tService;
+	}
+	
 	@GetMapping("tweets")
 	public List<Tweet> getAll(HttpServletResponse response) {
-		throw new NotYetImplementedException();
+		return tService.getAll();
 	}
 	
 	@PostMapping("tweets")

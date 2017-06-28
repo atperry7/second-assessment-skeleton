@@ -1,6 +1,7 @@
 package com.cooksys.secondassessment.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -10,8 +11,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cooksys.secondassessment.dto.HashTagNoIdDto;
 import com.cooksys.secondassessment.entity.HashTag;
 import com.cooksys.secondassessment.entity.Tweet;
+import com.cooksys.secondassessment.mapper.HashTagMapper;
 import com.cooksys.secondassessment.service.TagService;
 
 @RestController
@@ -19,9 +22,11 @@ import com.cooksys.secondassessment.service.TagService;
 public class TagController {
 	
 	private TagService tService;
+	private HashTagMapper hMapper;
 
-	public TagController(TagService tService) {
+	public TagController(TagService tService, HashTagMapper hMapper) {
 		this.tService = tService;
+		this.hMapper = hMapper;
 	}
 
 	@GetMapping("validate/tag/exists/{label}")
@@ -30,8 +35,10 @@ public class TagController {
 	}
 	
 	@GetMapping("tags")
-	public List<HashTag> getAll(HttpServletResponse response) {
-		return tService.getAll();
+	public List<HashTagNoIdDto> getAll(HttpServletResponse response) {
+		return tService.getAll().stream()
+				.map(hMapper::hashTagNoIdDto)
+				.collect(Collectors.toList());
 	}
 	
 	@GetMapping("tags/{label}")
