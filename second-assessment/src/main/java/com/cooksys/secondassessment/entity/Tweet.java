@@ -49,7 +49,7 @@ public class Tweet {
 	private Set<HashTag> labels = new HashSet<>();
 	
 	@ManyToMany(mappedBy="likedTweets", fetch = FetchType.LAZY)
-	private Set<TweetUser> usersWhoLiked;
+	private Set<TweetUser> usersWhoLiked = new HashSet<>();
 
 	public Integer getId() {
 		return id;

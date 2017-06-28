@@ -18,6 +18,7 @@ import com.cooksys.secondassessment.dto.HashTagNoIdDto;
 import com.cooksys.secondassessment.dto.TweetCreateSimpleDto;
 import com.cooksys.secondassessment.dto.TweetSimpleDto;
 import com.cooksys.secondassessment.dto.TweetUserCreateDto;
+import com.cooksys.secondassessment.dto.TweetUserCredOnlyDto;
 import com.cooksys.secondassessment.dto.TweetUserDto;
 import com.cooksys.secondassessment.dto.TweetWithIdDto;
 import com.cooksys.secondassessment.entity.HashTag;
@@ -68,8 +69,9 @@ public class TweetController {
 	}
 	
 	@PostMapping("tweets/{id}/like")
-	public void followTweetById(@PathVariable Integer id, HttpServletResponse response) {
-		throw new NotYetImplementedException();
+	public void likeTweetById(@RequestBody TweetUserCredOnlyDto creds ,@PathVariable Integer id, HttpServletResponse response) {
+		response.setStatus(HttpServletResponse.SC_ACCEPTED);
+		tService.likeTweetById(creds, id);
 	}
 	
 	@PostMapping("tweets/{id}/reply")
@@ -88,8 +90,10 @@ public class TweetController {
 	}
 	
 	@GetMapping("tweets/{id}/likes")
-	public List<TweetUser> getUsersForTweetById(@PathVariable Integer id, HttpServletResponse response) {
-		throw new NotYetImplementedException();
+	public List<TweetUserDto> getUsersForTweetById(@PathVariable Integer id, HttpServletResponse response) {
+		return tService.getLikesForTweetById(id).stream()
+				.filter(user -> user.getIsActive().equals(true))
+				.map(tUserMapper::tUserDto).collect(Collectors.toList());
 	}
 	
 	@GetMapping("tweets/{id}/context")

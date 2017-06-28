@@ -1,6 +1,7 @@
 package com.cooksys.secondassessment.entity;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -14,6 +15,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
@@ -31,12 +34,12 @@ public class HashTag {
 	@Column(updatable = false)
 	private Date firstUsed;
 
-	@UpdateTimestamp
 	@Temporal(TemporalType.TIMESTAMP)
+	@UpdateTimestamp
 	private Date lastUsed;
 	
 	@ManyToMany(mappedBy="labels", fetch = FetchType.LAZY)
-	private Set<Tweet> usedInTweets;
+	private Set<Tweet> usedInTweets = new HashSet<>();
 	
 	public String getLabel() {
 		return label;

@@ -1,5 +1,6 @@
 package com.cooksys.secondassessment.entity;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -27,7 +28,7 @@ public class Profile {
 	private String phone;
 
 	@OneToMany(mappedBy = "profile")
-	private Set<TweetUser> users;
+	private Set<TweetUser> users = new HashSet<>();
 
 	public String getFirstName() {
 		return firstName;

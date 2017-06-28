@@ -9,7 +9,6 @@ import com.cooksys.secondassessment.dto.TweetUserCredOnlyDto;
 import com.cooksys.secondassessment.entity.TweetUser;
 import com.cooksys.secondassessment.exception.EntityNotFoundException;
 import com.cooksys.secondassessment.exception.InvalidArgumentPassedException;
-import com.cooksys.secondassessment.exception.UsernameExistsException;
 import com.cooksys.secondassessment.mapper.TweetUserMapper;
 import com.cooksys.secondassessment.repository.UserRepository;
 

@@ -1,6 +1,5 @@
 package com.cooksys.secondassessment.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -11,6 +10,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.cooksys.secondassessment.dto.TweetCreateSimpleDto;
+import com.cooksys.secondassessment.dto.TweetUserCredOnlyDto;
+import com.cooksys.secondassessment.dto.TweetUserDto;
 import com.cooksys.secondassessment.entity.HashTag;
 import com.cooksys.secondassessment.entity.Tweet;
 import com.cooksys.secondassessment.entity.TweetUser;
@@ -79,7 +80,8 @@ public class TweetService {
 				String label = sp.substring(1);
 				log.debug(label);
 				if (hRepo.findByLabelEquals(label) != null) {
-					hashTags.add(hRepo.findByLabel(label));
+					HashTag hashTag = hRepo.findByLabel(label);
+					hashTags.add(hRepo.save(hashTag));
 				} else {
 					HashTag hashTag = new HashTag();
 					hashTag.setLabel(label);
@@ -110,5 +112,24 @@ public class TweetService {
 
 	public Set<TweetUser> getUsersMentioned(Integer id) {
 		return tRepo.findOne(id).getMentions();
+	}
+
+	public void likeTweetById(TweetUserCredOnlyDto creds, Integer id) {
+		TweetUser tweetUser = uRepo
+				.findByCredentials_UsernameAndCredentials_Password(
+						creds.getCredentials().getUsername(), creds.getCredentials().getPassword());
+		Tweet tweet = tRepo.findOne(id);
+		
+		if (tweetUser != null && tweet != null) {
+//			tweet.getUsersWhoLiked().add(tweetUser);
+			tweetUser.getLikedTweets().add(tweet);
+//			tRepo.save(tweet);
+			uRepo.save(tweetUser);
+		}
+	
+	}
+
+	public Set<TweetUser> getLikesForTweetById(Integer id) {
+		return tRepo.getOne(id).getUsersWhoLiked();
 	}
 }
