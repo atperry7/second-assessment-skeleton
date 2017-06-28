@@ -1,25 +1,34 @@
 package com.cooksys.secondassessment.service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.cooksys.secondassessment.dto.TweetCreateSimpleDto;
+import com.cooksys.secondassessment.entity.HashTag;
 import com.cooksys.secondassessment.entity.Tweet;
+import com.cooksys.secondassessment.entity.TweetUser;
+import com.cooksys.secondassessment.repository.HashTagRepository;
 import com.cooksys.secondassessment.repository.TweetRepository;
 import com.cooksys.secondassessment.repository.UserRepository;
 
 @Service
 public class TweetService {
 
+	private Logger log = LoggerFactory.getLogger(getClass());
 	private TweetRepository tRepo;
 	private UserRepository uRepo;
+	private HashTagRepository hRepo;
 
-	public TweetService(TweetRepository tRepo, UserRepository uRepo) {
+	public TweetService(TweetRepository tRepo, UserRepository uRepo, HashTagRepository hRepo) {
 		this.tRepo = tRepo;
 		this.uRepo = uRepo;
+		this.hRepo = hRepo;
 	}
 	
 	public List<Tweet> getAll() {
@@ -29,8 +38,60 @@ public class TweetService {
 	}
 
 	public Tweet createSimpleTweet(TweetCreateSimpleDto tweet) {
+		TweetUser tweetUser = uRepo
+				.findByCredentials_UsernameAndCredentials_Password(
+						tweet.getCredentials().getUsername(), tweet.getCredentials().getPassword());
+		
+		if (tweetUser != null) {
+			Tweet tweetCrea = new Tweet();
+			tweetCrea.setContent(tweet.getContent());
+			tweetCrea.setAuthor(tweetUser);
+			tweetCrea.setMentions(parseUsersFromTweet(tweet.getContent(), tweetCrea.getMentions()));
+			tweetCrea.setLabels(parseHashTagsFromTweet(tweet.getContent(), tweetCrea.getLabels()));
+			return tRepo.save(tweetCrea);
+		}
 		
 		return null;
+	}
+	
+	private Set<TweetUser> parseUsersFromTweet(String contents, Set<TweetUser> tweetUsers) {	
+		String[] split = contents.split(" ");
+		
+		for(String sp : split) {
+			if (sp.startsWith("@")) {
+				String username = sp.substring(1);
+				log.debug(username);
+				if (uRepo.findByCredentials_UsernameAndIsActiveEquals(username, true)) {
+					tweetUsers.add(uRepo.findByCredentials_Username(username));
+				}
+			}
+		}
+		
+		return tweetUsers;
+	}
+	
+	private Set<HashTag> parseHashTagsFromTweet(String contents, Set<HashTag> hashTags) {
+		String[] split = contents.split(" ");
+		
+		for(String sp : split) {
+			if (sp.startsWith("#")) {
+				String label = sp.substring(1);
+				log.debug(label);
+				if (hRepo.findByLabelExists(label)) {
+					hashTags.add(hRepo.findByLabel(label));
+				} else {
+					HashTag hashTag = new HashTag();
+					hashTag.setLabel(label);
+					hRepo.save(hashTags);
+				}
+			}
+		}
+		
+		return hashTags;
+	}
+
+	public Tweet getById(Integer id) {
+		return tRepo.findOne(id);
 	}
 
 }

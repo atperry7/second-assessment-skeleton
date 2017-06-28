@@ -14,7 +14,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 public class Tweet {
@@ -24,7 +23,7 @@ public class Tweet {
 	private Integer id;
 
 	@CreationTimestamp
-	@Temporal(TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.DATE)
 	@Column(updatable = false)
 	private Date posted;
 
@@ -105,8 +104,8 @@ public class Tweet {
 		return mentions;
 	}
 
-	public void setMentions(Set<TweetUser> mentions) {
-		this.mentions = mentions;
+	public void setMentions(Set<TweetUser> list) {
+		this.mentions = list;
 	}
 
 	public Set<HashTag> getLabels() {

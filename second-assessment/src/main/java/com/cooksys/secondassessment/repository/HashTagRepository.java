@@ -6,4 +6,5 @@ import com.cooksys.secondassessment.entity.HashTag;
 
 public interface HashTagRepository extends JpaRepository<HashTag, Integer> {
 	HashTag findByLabel(String label);
+	boolean findByLabelExists(String label);
 }

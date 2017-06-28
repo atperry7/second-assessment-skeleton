@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cooksys.secondassessment.dto.TweetCreateSimpleDto;
+import com.cooksys.secondassessment.dto.TweetSimpleDto;
 import com.cooksys.secondassessment.dto.TweetWithIdDto;
 import com.cooksys.secondassessment.entity.HashTag;
 import com.cooksys.secondassessment.entity.Tweet;
@@ -43,8 +44,8 @@ public class TweetController {
 	}
 	
 	@PostMapping("tweets")
-	public Tweet createSimpTweet(@RequestBody TweetCreateSimpleDto tweet, HttpServletResponse response) {
-		throw new NotYetImplementedException();
+	public TweetSimpleDto createSimpTweet(@RequestBody TweetCreateSimpleDto tweet, HttpServletResponse response) {
+		return tMapper.tweetSimpleDto(tService.createSimpleTweet(tweet));
 	}
 	
 	@GetMapping("tweets/{id}")

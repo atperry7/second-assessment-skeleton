@@ -1,6 +1,5 @@
 package com.cooksys.secondassessment.entity;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Set;
 
@@ -18,8 +17,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 @Entity
 public class TweetUser {
