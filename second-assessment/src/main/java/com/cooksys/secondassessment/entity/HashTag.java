@@ -1,12 +1,15 @@
 package com.cooksys.secondassessment.entity;
 
 import java.util.Date;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -31,6 +34,9 @@ public class HashTag {
 	@UpdateTimestamp
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastUsed;
+	
+	@ManyToMany(mappedBy="labels", fetch = FetchType.LAZY)
+	private Set<Tweet> usedInTweets;
 	
 	public String getLabel() {
 		return label;
@@ -62,6 +68,14 @@ public class HashTag {
 
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	public Set<Tweet> getUsedInTweets() {
+		return usedInTweets;
+	}
+
+	public void setUsedInTweets(Set<Tweet> usedInTweets) {
+		this.usedInTweets = usedInTweets;
 	}
 
 	@Override

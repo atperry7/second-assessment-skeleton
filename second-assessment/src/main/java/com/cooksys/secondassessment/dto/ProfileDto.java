@@ -1,6 +1,6 @@
 package com.cooksys.secondassessment.dto;
 
-public class ProfileDto {
+public class ProfileDto { 
 
 	private String firstName;
 	private String lastName;

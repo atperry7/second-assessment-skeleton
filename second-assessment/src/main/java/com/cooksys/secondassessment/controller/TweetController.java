@@ -50,12 +50,12 @@ public class TweetController {
 	
 	@GetMapping("tweets/{id}")
 	public Tweet getTweetById(@PathVariable Integer id, HttpServletResponse response) {
-		throw new NotYetImplementedException();
+		return tService.getById(id);
 	}
 	
 	@DeleteMapping("tweets/{id}")
 	public Tweet deleteTweetById(@PathVariable Integer id, HttpServletResponse response) {
-		throw new NotYetImplementedException();
+		return tService.deleteById(id);
 	}
 	
 	@PostMapping("tweets/{id}/like")

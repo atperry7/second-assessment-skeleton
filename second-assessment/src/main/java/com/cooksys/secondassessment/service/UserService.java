@@ -23,7 +23,7 @@ public class UserService {
 	}
 
 	public boolean exists(String username) {
-		return userRepository.findByCredentials_UsernameExists(username);
+		return userRepository.findByCredentials_UsernameEquals(username);
 	}
 	
 	public List<TweetUser> getAll() {

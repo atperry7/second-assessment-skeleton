@@ -77,7 +77,7 @@ public class TweetService {
 			if (sp.startsWith("#")) {
 				String label = sp.substring(1);
 				log.debug(label);
-				if (hRepo.findByLabelExists(label)) {
+				if (hRepo.findByLabelEquals(label)) {
 					hashTags.add(hRepo.findByLabel(label));
 				} else {
 					HashTag hashTag = new HashTag();
@@ -94,4 +94,12 @@ public class TweetService {
 		return tRepo.findOne(id);
 	}
 
+	public Tweet deleteById(Integer id) {
+		if (tRepo.exists(id)) {
+			Tweet tweet = getById(id);
+			tweet.setIsDeleted(true);
+			return tweet;
+		}
+		return null;
+	}
 }

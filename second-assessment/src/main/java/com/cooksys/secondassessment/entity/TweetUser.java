@@ -7,6 +7,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -28,7 +29,7 @@ public class TweetUser {
 	@Embedded
 	private Credentials credentials;
 
-	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	private Profile profile;
 
 	@CreationTimestamp
@@ -42,25 +43,23 @@ public class TweetUser {
 	@ManyToMany
 	private Set<TweetUser> userFollowing;
 
-	@OneToMany(mappedBy = "author")
+	@OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
 	private Set<Tweet> tweets;
-	
+
 	private Boolean isActive = true;
 
+	@ManyToMany
+	private Set<Tweet> likedTweets;
+	
+	@ManyToMany(mappedBy="mentions", fetch = FetchType.LAZY)
+	private Set<Tweet> tweetsMentionedUser;
+	
 	public Integer getId() {
 		return id;
 	}
 
 	public void setId(Integer id) {
 		this.id = id;
-	}
-
-	public Date getJoined() {
-		return joined;
-	}
-
-	public void setJoined(Date joined) {
-		this.joined = joined;
 	}
 
 	public Credentials getCredentials() {
@@ -77,6 +76,14 @@ public class TweetUser {
 
 	public void setProfile(Profile profile) {
 		this.profile = profile;
+	}
+
+	public Date getJoined() {
+		return joined;
+	}
+
+	public void setJoined(Date joined) {
+		this.joined = joined;
 	}
 
 	public Set<TweetUser> getFollowersOfUser() {
@@ -109,6 +116,22 @@ public class TweetUser {
 
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
+	}
+
+	public Set<Tweet> getLikedTweets() {
+		return likedTweets;
+	}
+
+	public void setLikedTweets(Set<Tweet> likedTweets) {
+		this.likedTweets = likedTweets;
+	}
+
+	public Set<Tweet> getTweetsMentionedUser() {
+		return tweetsMentionedUser;
+	}
+
+	public void setTweetsMentionedUser(Set<Tweet> tweetsMentionedUser) {
+		this.tweetsMentionedUser = tweetsMentionedUser;
 	}
 
 	@Override

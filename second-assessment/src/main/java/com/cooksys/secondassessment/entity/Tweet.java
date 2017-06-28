@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -23,7 +24,7 @@ public class Tweet {
 	private Integer id;
 
 	@CreationTimestamp
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(updatable = false)
 	private Date posted;
 
@@ -32,17 +33,22 @@ public class Tweet {
 
 	private String content;
 
-	private Integer inReplyTo;
+	@ManyToOne
+	private Tweet inReplyTo;
 
-	private Integer repostOf;
+	@ManyToOne
+	private Tweet repostOf;
 
 	private Boolean isDeleted = false;
 
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.LAZY)
 	private Set<TweetUser> mentions;
 
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.LAZY)
 	private Set<HashTag> labels;
+	
+	@ManyToMany(mappedBy="likedTweets", fetch = FetchType.LAZY)
+	private Set<TweetUser> usersWhoLiked;
 
 	public Integer getId() {
 		return id;
@@ -60,38 +66,6 @@ public class Tweet {
 		this.posted = posted;
 	}
 
-	public String getContent() {
-		return content;
-	}
-
-	public void setContent(String content) {
-		this.content = content;
-	}
-
-	public Integer getInReplyTo() {
-		return inReplyTo;
-	}
-
-	public void setInReplyTo(Integer inReplyTo) {
-		this.inReplyTo = inReplyTo;
-	}
-
-	public Integer getRepostOf() {
-		return repostOf;
-	}
-
-	public void setRepostOf(Integer repostOf) {
-		this.repostOf = repostOf;
-	}
-
-	public Boolean getIsDeleted() {
-		return isDeleted;
-	}
-
-	public void setIsDeleted(Boolean isDeleted) {
-		this.isDeleted = isDeleted;
-	}
-
 	public TweetUser getAuthor() {
 		return author;
 	}
@@ -100,12 +74,44 @@ public class Tweet {
 		this.author = author;
 	}
 
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public Tweet getInReplyTo() {
+		return inReplyTo;
+	}
+
+	public void setInReplyTo(Tweet inReplyTo) {
+		this.inReplyTo = inReplyTo;
+	}
+
+	public Tweet getRepostOf() {
+		return repostOf;
+	}
+
+	public void setRepostOf(Tweet repostOf) {
+		this.repostOf = repostOf;
+	}
+	
+	public Boolean getIsDeleted() {
+		return isDeleted;
+	}
+
+	public void setIsDeleted(Boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
 	public Set<TweetUser> getMentions() {
 		return mentions;
 	}
 
-	public void setMentions(Set<TweetUser> list) {
-		this.mentions = list;
+	public void setMentions(Set<TweetUser> mentions) {
+		this.mentions = mentions;
 	}
 
 	public Set<HashTag> getLabels() {
@@ -114,6 +120,14 @@ public class Tweet {
 
 	public void setLabels(Set<HashTag> labels) {
 		this.labels = labels;
+	}
+
+	public Set<TweetUser> getUsersWhoLiked() {
+		return usersWhoLiked;
+	}
+
+	public void setUsersWhoLiked(Set<TweetUser> usersWhoLiked) {
+		this.usersWhoLiked = usersWhoLiked;
 	}
 
 	@Override
