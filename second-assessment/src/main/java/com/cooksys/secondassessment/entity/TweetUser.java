@@ -45,7 +45,7 @@ public class TweetUser {
 	private Set<TweetUser> userFollowing = new HashSet<>();
 
 	@OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
-	private Set<Tweet> tweets;
+	private Set<Tweet> tweets = new HashSet<>();
 
 	private Boolean isActive = true;
 

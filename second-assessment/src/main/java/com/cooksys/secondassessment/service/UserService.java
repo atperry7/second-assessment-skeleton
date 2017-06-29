@@ -1,8 +1,13 @@
 package com.cooksys.secondassessment.service;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.cooksys.secondassessment.dto.TweetUserCredOnlyDto;
@@ -17,6 +22,7 @@ import com.cooksys.secondassessment.repository.UserRepository;
 @Service
 public class UserService {
 	
+	private Logger log = LoggerFactory.getLogger(getClass());
 	private UserRepository userRepository;
 	private TweetRepository tRepository;
 	
@@ -26,7 +32,7 @@ public class UserService {
 	}
 
 	public boolean exists(String username) {
-		return userRepository.findByCredentials_UsernameEquals(username) != null;
+		return userRepository.findByCredentials_Username(username) != null;
 	}
 	
 	public List<TweetUser> getAll() {
@@ -154,6 +160,31 @@ public class UserService {
 		
 		if (tweetUser != null && tweetUser.getIsActive().equals(true)) {
 			return tRepository.findByAuthor_IdOrderByPostedDesc(tweetUser.getId());
+		}
+		
+		throw new EntityNotFoundException();
+	}
+
+	public List<Tweet> getUsersFeed(String username) {
+		TweetUser tweetUser = userRepository.findByCredentials_Username(username);
+		
+		if (tweetUser != null && tweetUser.getIsActive().equals(true)) {
+			Set<TweetUser> tweetUsers = tweetUser.getFollowersOfUser().stream()
+					.filter(user -> user.getIsActive().equals(true))
+					.collect(Collectors.toSet());
+			
+			tweetUsers.add(tweetUser);
+			
+			List<Tweet> tweetU = new ArrayList<>();
+			
+			for(TweetUser tweetUser2 : tweetUsers) {
+				Iterator<Tweet> tIterator = tweetUser2.getTweets().iterator();
+				while(tIterator.hasNext()) {
+					tweetU.add(tIterator.next());
+				}
+			}
+			
+			return tweetU;
 		}
 		
 		throw new EntityNotFoundException();
