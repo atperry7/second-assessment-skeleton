@@ -3,6 +3,7 @@ package com.cooksys.secondassessment.dto;
 import com.cooksys.secondassessment.entity.Credentials;
 
 public class TweetCreateSimpleDto {
+	
 	String content;
 	Credentials credentials;
 

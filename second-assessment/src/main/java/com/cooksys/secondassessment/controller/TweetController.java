@@ -46,6 +46,8 @@ public class TweetController {
 	public List<TweetWithIdDto> getAll(HttpServletResponse response) {
 		return tService.getAll()
 				.stream()
+				.filter(tweet -> tweet.getIsDeleted().equals(false))
+				.sorted((t1, t2) -> t2.getPosted().compareTo(t1.getPosted()))
 				.map(tMapper::tWithIdDto)
 				.collect(Collectors.toList());
 	}
@@ -83,7 +85,10 @@ public class TweetController {
 	
 	@GetMapping("tweets/{id}/tags")
 	public List<HashTagNoIdDto> getTagsForTweetById(@PathVariable Integer id, HttpServletResponse response) {
-		return tService.getTagsFromTweet(id).stream().map(hMapper::hashTagNoIdDto).collect(Collectors.toList());
+		return tService.getTagsFromTweet(id)
+				.stream()
+				.map(hMapper::hashTagNoIdDto)
+				.collect(Collectors.toList());
 	}
 	
 	@GetMapping("tweets/{id}/likes")
@@ -101,6 +106,8 @@ public class TweetController {
 	@GetMapping("tweets/{id}/replies")
 	public List<TweetWithIdDto> getRepliesToTweetById(@PathVariable Integer id, HttpServletResponse response) {
 		return tService.getDirectReplies(id).stream()
+				.filter(tweet -> tweet.getIsDeleted().equals(false))
+				.sorted((t1, t2) -> t2.getPosted().compareTo(t1.getPosted()))
 				.map(tMapper::tWithIdDto)
 				.collect(Collectors.toList());
 	}
@@ -108,12 +115,17 @@ public class TweetController {
 	@GetMapping("tweets/{id}/reposts")
 	public List<TweetWithIdDto> getRepostsForTweetById(@PathVariable Integer id, HttpServletResponse response) {
 		return tService.getDirectReposts(id).stream()
+				.filter(tweet -> tweet.getIsDeleted().equals(false))
+				.sorted((t1, t2) -> t2.getPosted().compareTo(t1.getPosted()))
 				.map(tMapper::tWithIdDto)
 				.collect(Collectors.toList());
 	}
 	
 	@GetMapping("tweets/{id}/mentions")
 	public List<TweetUserDto> getUserMentionedInTweetById(@PathVariable Integer id, HttpServletResponse response) {
-		return tService.getUsersMentioned(id).stream().map(tUserMapper::tUserDto).collect(Collectors.toList());
+		return tService.getUsersMentioned(id)
+				.stream()
+				.map(tUserMapper::tUserDto)
+				.collect(Collectors.toList());
 	}
 }

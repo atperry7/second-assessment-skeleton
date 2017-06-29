@@ -1,6 +1,5 @@
 package com.cooksys.secondassessment.controller;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,14 +12,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cooksys.secondassessment.dto.TweetUserCreateDto;
 import com.cooksys.secondassessment.dto.TweetUserCredOnlyDto;
 import com.cooksys.secondassessment.dto.TweetUserDto;
 import com.cooksys.secondassessment.dto.TweetWithIdDto;
-import com.cooksys.secondassessment.entity.Tweet;
-import com.cooksys.secondassessment.entity.TweetUser;
 import com.cooksys.secondassessment.mapper.TweetMapper;
 import com.cooksys.secondassessment.mapper.TweetUserMapper;
 import com.cooksys.secondassessment.service.UserService;
@@ -64,10 +62,13 @@ public class UserController {
 	}
 	
 	@PostMapping("users")
-	public TweetUserDto create(@RequestBody TweetUserCreateDto user, HttpServletResponse response) {
+	public TweetUserDto create(@RequestBody TweetUserCreateDto user,
+			@RequestParam(required = false) String firstName, 
+			@RequestParam(required = false) String lastName,
+			@RequestParam(required = false) String phone,
+			HttpServletResponse response) {
 		response.setStatus(HttpServletResponse.SC_CREATED);
-		TweetUser uTweetUser = uService.save(tMapper.toTweetUser(user));
-		return tMapper.tUserDto(uTweetUser);
+		return tMapper.tUserDto(uService.save(tMapper.toTweetUser(user), firstName, lastName, phone));
 		
 	}
 	
@@ -78,10 +79,13 @@ public class UserController {
 	}
 	
 	@PatchMapping("users/@{username}")
-	public TweetUserDto updateUser(@RequestBody TweetUserCreateDto user, @PathVariable String username, HttpServletResponse response) {
+	public TweetUserDto updateUser(@RequestBody TweetUserCredOnlyDto user, 
+			@RequestParam(required = false) String firstName, 
+			@RequestParam(required = false) String lastName,
+			@RequestParam(required = false) String phone,
+			@PathVariable String username, HttpServletResponse response) {
 		response.setStatus(HttpServletResponse.SC_FOUND);
-		TweetUser uTweetUser = uService.save(tMapper.toTweetUser(user));
-		return tMapper.tUserDto(uTweetUser);
+		return tMapper.tUserDto(uService.updateAUser(user, username, firstName, lastName, phone));
 	}
 	
 	@DeleteMapping("users/@{username}")
@@ -129,6 +133,7 @@ public class UserController {
 		response.setStatus(HttpServletResponse.SC_FOUND);
 		return uService.getMentions(username).stream()
 				.filter(tweet -> tweet.getIsDeleted().equals(false))
+				.sorted((t1, t2) -> t2.getPosted().compareTo(t1.getPosted()))
 				.map(tweetMapper::tWithIdDto)
 				.collect(Collectors.toList());
 	}

@@ -2,11 +2,9 @@ package com.cooksys.secondassessment.service;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.cooksys.secondassessment.dto.TweetCreateSimpleDto;
@@ -17,32 +15,27 @@ import com.cooksys.secondassessment.entity.TweetUser;
 import com.cooksys.secondassessment.exception.EntityNotFoundException;
 import com.cooksys.secondassessment.repository.HashTagRepository;
 import com.cooksys.secondassessment.repository.TweetRepository;
-import com.cooksys.secondassessment.repository.UserRepository;
 
 @Service
 public class TweetService {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private TweetRepository tRepo;
-	private UserRepository uRepo;
+	private UserService uService;
 	private HashTagRepository hRepo;
 
-	public TweetService(TweetRepository tRepo, UserRepository uRepo, HashTagRepository hRepo) {
+	public TweetService(TweetRepository tRepo, UserService uService, HashTagRepository hRepo) {
 		this.tRepo = tRepo;
-		this.uRepo = uRepo;
+		this.uService = uService;
 		this.hRepo = hRepo;
 	}
 	
 	public List<Tweet> getAll() {
-		return tRepo.findAll(new Sort(Sort.Direction.ASC, "posted")).stream()
-				.filter(tweet -> tweet.getIsDeleted().equals(false))
-				.collect(Collectors.toList());
+		return tRepo.findAll();
 	}
 
 	public Tweet createSimpleTweet(TweetCreateSimpleDto tweet) {
-		TweetUser tweetUser = uRepo
-				.findByCredentials_UsernameAndCredentials_Password(
-						tweet.getCredentials().getUsername(), tweet.getCredentials().getPassword());
+		TweetUser tweetUser = uService.checkUserCredentials(tweet.getCredentials());
 		
 		if (tweetUser != null) {
 			Tweet tweetCrea = new Tweet();
@@ -63,7 +56,7 @@ public class TweetService {
 			if (sp.startsWith("@")) {
 				String username = sp.substring(1);
 				log.debug(username);
-				TweetUser tweetUser = uRepo.findByCredentials_Username(username);
+				TweetUser tweetUser = uService.getUser(username);
 				if (tweetUser != null && tweetUser.getIsActive().equals(true)) {
 					tweetUsers.add(tweetUser);
 				}
@@ -116,14 +109,13 @@ public class TweetService {
 	}
 
 	public void likeTweetById(TweetUserCredOnlyDto creds, Integer id) {
-		TweetUser tweetUser = uRepo
-				.findByCredentials_UsernameAndCredentials_Password(
-						creds.getCredentials().getUsername(), creds.getCredentials().getPassword());
+		TweetUser tweetUser = uService.checkUserCredentials(creds.getCredentials());
+		
 		Tweet tweet = tRepo.findOne(id);
 		
 		if (tweetUser != null && tweet != null) {
 			tweetUser.getLikedTweets().add(tweet);
-			uRepo.save(tweetUser);
+			uService.save(tweetUser);
 		}
 	
 	}
@@ -133,9 +125,7 @@ public class TweetService {
 	}
 
 	public Tweet replyToTweetById(TweetCreateSimpleDto simpleDto, Integer id) {
-		TweetUser tweetUser = uRepo
-				.findByCredentials_UsernameAndCredentials_Password(
-						simpleDto.getCredentials().getUsername(), simpleDto.getCredentials().getPassword());
+		TweetUser tweetUser = uService.checkUserCredentials(simpleDto.getCredentials());
 		Tweet replyToTweet = getById(id);
 		
 		if (tweetUser != null && tweetUser.getIsActive().equals(true) && replyToTweet.getIsDeleted().equals(false)) {
@@ -152,9 +142,7 @@ public class TweetService {
 	}
 
 	public Tweet repostTweetById(TweetUserCredOnlyDto creds, Integer id) {
-		TweetUser tweetUser = uRepo
-				.findByCredentials_UsernameAndCredentials_Password(
-						creds.getCredentials().getUsername(), creds.getCredentials().getPassword());
+		TweetUser tweetUser = uService.checkUserCredentials(creds.getCredentials());
 		Tweet tweetToRepost = tRepo.findOne(id);
 		
 		if (tweetUser != null && tweetUser.getIsActive().equals(true) && tweetToRepost.getIsDeleted().equals(false)) {
