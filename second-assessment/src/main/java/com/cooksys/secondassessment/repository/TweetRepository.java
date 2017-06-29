@@ -9,4 +9,5 @@ import com.cooksys.secondassessment.entity.Tweet;
 public interface TweetRepository extends JpaRepository<Tweet, Integer> {
 	
 	List<Tweet> findByInReplyTo_IdOrderByPostedDesc(Integer id);
+	List<Tweet> findByRepostOf_IdOrderByPostedDesc(Integer id);
 }

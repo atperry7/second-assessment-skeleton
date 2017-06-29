@@ -77,8 +77,8 @@ public class TweetController {
 	}
 	
 	@PostMapping("tweets/{id}/repost")
-	public Tweet repostTweetById(@PathVariable Integer id, HttpServletResponse response) {
-		throw new NotYetImplementedException();
+	public TweetWithIdDto repostTweetById(@RequestBody TweetUserCredOnlyDto creds, @PathVariable Integer id, HttpServletResponse response) {
+		return tMapper.tWithIdDto(tService.repostTweetById(creds, id));
 	}
 	
 	@GetMapping("tweets/{id}/tags")
@@ -106,8 +106,10 @@ public class TweetController {
 	}
 	
 	@GetMapping("tweets/{id}/reposts")
-	public List<Tweet> getRepostsForTweetById(@PathVariable Integer id, HttpServletResponse response) {
-		throw new NotYetImplementedException();
+	public List<TweetWithIdDto> getRepostsForTweetById(@PathVariable Integer id, HttpServletResponse response) {
+		return tService.getDirectReposts(id).stream()
+				.map(tMapper::tWithIdDto)
+				.collect(Collectors.toList());
 	}
 	
 	@GetMapping("tweets/{id}/mentions")

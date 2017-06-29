@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import com.cooksys.secondassessment.dto.TweetCreateSimpleDto;
 import com.cooksys.secondassessment.dto.TweetUserCredOnlyDto;
-import com.cooksys.secondassessment.dto.TweetWithIdDto;
 import com.cooksys.secondassessment.entity.HashTag;
 import com.cooksys.secondassessment.entity.Tweet;
 import com.cooksys.secondassessment.entity.TweetUser;
@@ -138,7 +137,7 @@ public class TweetService {
 						simpleDto.getCredentials().getUsername(), simpleDto.getCredentials().getPassword());
 		Tweet replyToTweet = getById(id);
 		
-		if (tweetUser != null && replyToTweet.getIsDeleted().equals(false)) {
+		if (tweetUser != null && tweetUser.getIsActive().equals(true) && replyToTweet.getIsDeleted().equals(false)) {
 			Tweet tweet = createSimpleTweet(simpleDto);
 			tweet.setInReplyTo(replyToTweet);
 			return tRepo.save(tweet);
@@ -149,5 +148,28 @@ public class TweetService {
 
 	public List<Tweet> getDirectReplies(Integer id) {
 		return tRepo.findByInReplyTo_IdOrderByPostedDesc(id);
+	}
+
+	public Tweet repostTweetById(TweetUserCredOnlyDto creds, Integer id) {
+		TweetUser tweetUser = uRepo
+				.findByCredentials_UsernameAndCredentials_Password(
+						creds.getCredentials().getUsername(), creds.getCredentials().getPassword());
+		Tweet tweetToRepost = tRepo.findOne(id);
+		
+		if (tweetUser != null && tweetUser.getIsActive().equals(true) && tweetToRepost.getIsDeleted().equals(false)) {
+			TweetCreateSimpleDto tweetCreateSimpleDto = new TweetCreateSimpleDto();
+			tweetCreateSimpleDto.setCredentials(tweetUser.getCredentials());
+			tweetCreateSimpleDto.setContent(tweetToRepost.getContent());
+			
+			Tweet tweet = createSimpleTweet(tweetCreateSimpleDto);
+			tweet.setRepostOf(tweetToRepost);
+			return tRepo.save(tweet);
+		}
+		
+		throw new EntityNotFoundException();
+	}
+	
+	public List<Tweet> getDirectReposts(Integer id) {
+		return tRepo.findByRepostOf_IdOrderByPostedDesc(id);
 	}
 }
