@@ -1,6 +1,7 @@
 package com.cooksys.secondassessment.entity;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -37,22 +38,22 @@ public class TweetUser {
 	@Column(updatable = false)
 	private Date joined;
 
-	@ManyToMany
-	private Set<TweetUser> followersOfUser;
+	@ManyToMany(fetch = FetchType.LAZY)
+	private Set<TweetUser> followersOfUser = new HashSet<>();
 
-	@ManyToMany
-	private Set<TweetUser> userFollowing;
+	@ManyToMany(fetch = FetchType.LAZY)
+	private Set<TweetUser> userFollowing = new HashSet<>();
 
 	@OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
 	private Set<Tweet> tweets;
 
 	private Boolean isActive = true;
 
-	@ManyToMany
-	private Set<Tweet> likedTweets;
+	@ManyToMany(fetch = FetchType.LAZY)
+	private Set<Tweet> likedTweets = new HashSet<>();
 	
 	@ManyToMany(mappedBy="mentions", fetch = FetchType.LAZY)
-	private Set<Tweet> tweetsMentionedUser;
+	private Set<Tweet> tweetsMentionedUser = new HashSet<>();
 	
 	public Integer getId() {
 		return id;
