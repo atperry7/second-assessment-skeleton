@@ -111,8 +111,11 @@ public class UserController {
 	}
 	
 	@GetMapping("users/@{username}/tweets")
-	public List<Tweet> getUserTweets(@PathVariable String username, HttpServletResponse response) {
-		throw new NotYetImplementedException();
+	public List<TweetWithIdDto> getUserTweets(@PathVariable String username, HttpServletResponse response) {
+		return uService.getUserTweets(username).stream()
+				.filter(tweet -> tweet.getIsDeleted().equals(false))
+				.map(tweetMapper::tWithIdDto)
+				.collect(Collectors.toList());
 	}
 	
 	@GetMapping("users/@{username}/mentions")

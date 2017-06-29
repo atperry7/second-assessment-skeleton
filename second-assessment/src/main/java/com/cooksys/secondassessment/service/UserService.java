@@ -144,6 +144,16 @@ public class UserService {
 		
 		throw new EntityNotFoundException();
 	}
+
+	public Set<Tweet> getUserTweets(String username) {
+		TweetUser tweetUser = userRepository.findByCredentials_Username(username);
+		
+		if (tweetUser != null && tweetUser.getIsActive().equals(true)) {
+			return tweetUser.getTweets();
+		}
+		
+		throw new EntityNotFoundException();
+	}
 	
 	
 }
