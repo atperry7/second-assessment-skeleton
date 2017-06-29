@@ -1,11 +1,12 @@
 package com.cooksys.secondassessment.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
 import com.cooksys.secondassessment.dto.TweetUserCredOnlyDto;
+import com.cooksys.secondassessment.entity.Tweet;
 import com.cooksys.secondassessment.entity.TweetUser;
 import com.cooksys.secondassessment.exception.EntityNotFoundException;
 import com.cooksys.secondassessment.exception.InvalidArgumentPassedException;
@@ -118,22 +119,27 @@ public class UserService {
 		
 	}
 
-	public List<TweetUser> getFollowers(String username) {
-		
+	public Set<TweetUser> getFollowers(String username) {
 		if (exists(username)) {
-			return getUser(username).getFollowersOfUser().stream()
-					.filter(user -> user.getIsActive().equals(true))
-					.collect(Collectors.toList());
+			return getUser(username).getFollowersOfUser();
 		}
 		
 		throw new EntityNotFoundException();
 	}
 
-	public List<TweetUser> getUserFollowing(String username) {
+	public Set<TweetUser> getUserFollowing(String username) {
 		if (exists(username)) {
-			return getUser(username).getUserFollowing().stream()
-					.filter(user -> user.getIsActive().equals(true))
-					.collect(Collectors.toList());
+			return getUser(username).getUserFollowing();
+		}
+		
+		throw new EntityNotFoundException();
+	}
+
+	public Set<Tweet> getMentions(String username) {
+		TweetUser tweetUser = userRepository.findByCredentials_Username(username);
+		
+		if (tweetUser != null && tweetUser.getIsActive().equals(true)) {
+			return tweetUser.getTweetsMentionedUser();
 		}
 		
 		throw new EntityNotFoundException();

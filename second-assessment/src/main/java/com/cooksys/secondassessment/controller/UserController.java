@@ -6,8 +6,6 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.cfg.NotYetImplementedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -20,8 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cooksys.secondassessment.dto.TweetUserCreateDto;
 import com.cooksys.secondassessment.dto.TweetUserCredOnlyDto;
 import com.cooksys.secondassessment.dto.TweetUserDto;
+import com.cooksys.secondassessment.dto.TweetWithIdDto;
 import com.cooksys.secondassessment.entity.Tweet;
 import com.cooksys.secondassessment.entity.TweetUser;
+import com.cooksys.secondassessment.mapper.TweetMapper;
 import com.cooksys.secondassessment.mapper.TweetUserMapper;
 import com.cooksys.secondassessment.service.UserService;
 
@@ -29,13 +29,14 @@ import com.cooksys.secondassessment.service.UserService;
 @RequestMapping("user")
 public class UserController {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
 	private UserService uService;
 	private TweetUserMapper tMapper;
+	private TweetMapper tweetMapper;
 
-	public UserController(UserService uService, TweetUserMapper tMapper) {
+	public UserController(UserService uService, TweetUserMapper tMapper, TweetMapper tweetMapper) {
 		this.uService = uService;
 		this.tMapper = tMapper;
+		this.tweetMapper = tweetMapper;
 	}
 	
 	//Checks whether or not a given username exists.
@@ -115,13 +116,17 @@ public class UserController {
 	}
 	
 	@GetMapping("users/@{username}/mentions")
-	public List<TweetUserDto> getUserMentions(@PathVariable String username, HttpServletResponse response) {
-		throw new NotYetImplementedException();
+	public List<TweetWithIdDto> getUserMentions(@PathVariable String username, HttpServletResponse response) {
+		return uService.getMentions(username).stream()
+				.filter(tweet -> tweet.getIsDeleted().equals(false))
+				.map(tweetMapper::tWithIdDto)
+				.collect(Collectors.toList());
 	}
 	
 	@GetMapping("users/@{username}/followers")
 	public List<TweetUserDto> getUserFollowers(@PathVariable String username, HttpServletResponse response) {
 		return uService.getFollowers(username).stream()
+				.filter(user -> user.getIsActive().equals(true))
 				.map(tMapper::tUserDto)
 				.collect(Collectors.toList());
 	}
@@ -129,6 +134,7 @@ public class UserController {
 	@GetMapping("users/@{username}/following")
 	public List<TweetUserDto> getUserFollowing(@PathVariable String username, HttpServletResponse response) {
 		return uService.getUserFollowing(username).stream()
+				.filter(user -> user.getIsActive().equals(true))
 				.map(tMapper::tUserDto)
 				.collect(Collectors.toList());
 	}

@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import com.cooksys.secondassessment.dto.TweetCreateSimpleDto;
 import com.cooksys.secondassessment.dto.TweetUserCredOnlyDto;
-import com.cooksys.secondassessment.dto.TweetUserDto;
 import com.cooksys.secondassessment.entity.HashTag;
 import com.cooksys.secondassessment.entity.Tweet;
 import com.cooksys.secondassessment.entity.TweetUser;
@@ -121,9 +120,7 @@ public class TweetService {
 		Tweet tweet = tRepo.findOne(id);
 		
 		if (tweetUser != null && tweet != null) {
-//			tweet.getUsersWhoLiked().add(tweetUser);
 			tweetUser.getLikedTweets().add(tweet);
-//			tRepo.save(tweet);
 			uRepo.save(tweetUser);
 		}
 	
