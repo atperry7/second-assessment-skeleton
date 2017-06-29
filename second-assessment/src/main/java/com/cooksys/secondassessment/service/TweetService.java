@@ -63,8 +63,9 @@ public class TweetService {
 			if (sp.startsWith("@")) {
 				String username = sp.substring(1);
 				log.debug(username);
-				if (uRepo.findByCredentials_UsernameAndIsActiveEquals(username, true) != null) {
-					tweetUsers.add(uRepo.findByCredentials_Username(username));
+				TweetUser tweetUser = uRepo.findByCredentials_Username(username);
+				if (tweetUser != null && tweetUser.getIsActive().equals(true)) {
+					tweetUsers.add(tweetUser);
 				}
 			}
 		}

@@ -14,5 +14,4 @@ public interface UserRepository extends JpaRepository<TweetUser, Integer> {
 	TweetUser findByCredentials_UsernameEquals(String username);
 	TweetUser findByCredentials_UsernameAndCredentials_PasswordEquals(String username, String password);
 	List<TweetUser> findByIsActiveTrue();
-	TweetUser findByCredentials_UsernameAndIsActiveEquals(String username, Boolean bool);
 }

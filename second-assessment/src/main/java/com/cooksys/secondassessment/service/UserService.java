@@ -11,15 +11,18 @@ import com.cooksys.secondassessment.entity.TweetUser;
 import com.cooksys.secondassessment.exception.EntityNotFoundException;
 import com.cooksys.secondassessment.exception.InvalidArgumentPassedException;
 import com.cooksys.secondassessment.mapper.TweetUserMapper;
+import com.cooksys.secondassessment.repository.TweetRepository;
 import com.cooksys.secondassessment.repository.UserRepository;
 
 @Service
 public class UserService {
 	
 	private UserRepository userRepository;
+	private TweetRepository tRepository;
 	
-	public UserService(UserRepository userRepository, TweetUserMapper tMapper) {
+	public UserService(UserRepository userRepository, TweetUserMapper tMapper, TweetRepository tRepository) {
 		this.userRepository = userRepository;
+		this.tRepository = tRepository;
 	}
 
 	public boolean exists(String username) {
@@ -39,11 +42,12 @@ public class UserService {
 		if (exists(user.getCredentials().getUsername())) {
 			
 			TweetUser tUser = getUser(user.getCredentials().getUsername());
+			tUser.setProfile(user.getProfile());
 			
 			if (tUser.getCredentials().getPassword().equals(user.getCredentials().getPassword()) 
 					&& tUser.getIsActive().equals(false)) {
 				tUser.setIsActive(true);
-				return tUser;
+				return userRepository.save(tUser);
 				
 			} else if (tUser.getCredentials().getPassword().equals(user.getCredentials().getPassword()) 
 					&& tUser.getIsActive().equals(true)) {
@@ -103,12 +107,12 @@ public class UserService {
 			
 			TweetUser userToFollow = getUser(username);
 			
-			if (!userToFollow.getFollowersOfUser().contains(user) && userToFollow.getIsActive().equals(true)) {
+			if (userToFollow.getFollowersOfUser().contains(user) && userToFollow.getIsActive().equals(true)) {
 				userToFollow.getFollowersOfUser().remove(user);
 				save(userToFollow);
 			}
 			
-			if (!user.getUserFollowing().contains(userToFollow) && userToFollow.getIsActive().equals(true)) {
+			if (user.getUserFollowing().contains(userToFollow) && userToFollow.getIsActive().equals(true)) {
 				user.getUserFollowing().remove(userToFollow);
 				save(user);
 			}
@@ -145,11 +149,11 @@ public class UserService {
 		throw new EntityNotFoundException();
 	}
 
-	public Set<Tweet> getUserTweets(String username) {
+	public List<Tweet> getUserTweets(String username) {
 		TweetUser tweetUser = userRepository.findByCredentials_Username(username);
 		
 		if (tweetUser != null && tweetUser.getIsActive().equals(true)) {
-			return tweetUser.getTweets();
+			return tRepository.findByAuthor_IdOrderByPostedDesc(tweetUser.getId());
 		}
 		
 		throw new EntityNotFoundException();
