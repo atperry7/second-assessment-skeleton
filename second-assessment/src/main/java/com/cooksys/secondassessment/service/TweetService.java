@@ -3,6 +3,7 @@ package com.cooksys.secondassessment.service;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import com.cooksys.secondassessment.entity.Tweet;
 import com.cooksys.secondassessment.entity.TweetUser;
 import com.cooksys.secondassessment.exception.EntityNotFoundException;
 import com.cooksys.secondassessment.exception.InvalidArgumentPassedException;
+import com.cooksys.secondassessment.mapper.TweetMapper;
 import com.cooksys.secondassessment.repository.HashTagRepository;
 import com.cooksys.secondassessment.repository.TweetRepository;
 
@@ -26,11 +28,13 @@ public class TweetService {
 	private TweetRepository tRepo;
 	private UserService uService;
 	private HashTagRepository hRepo;
+	private TweetMapper tMapper;
 
-	public TweetService(TweetRepository tRepo, UserService uService, HashTagRepository hRepo) {
+	public TweetService(TweetRepository tRepo, UserService uService, HashTagRepository hRepo, TweetMapper tMapper) {
 		this.tRepo = tRepo;
 		this.uService = uService;
 		this.hRepo = hRepo;
+		this.tMapper = tMapper;
 	}
 	
 	public List<Tweet> getAll() {
@@ -202,9 +206,12 @@ public class TweetService {
 	public Context getContextOfTweetById(Integer id) {
 		Context context = new Context();
 		Tweet tweet = tRepo.findOne(id);
+		context.setOrginialTweet(tMapper.tWithIdDto(tweet));
 		
-		tweet.getRelatedTweets().forEach(tweetToCheck -> log.debug("Tweet: " + tweetToCheck.getId()));
-		
+		//Traverses one level deep with this method
+		List<Tweet> tweetsTest = tRepo.findByRelatedTweets_Id(id);
+		context.setTweetsAfter(tweetsTest.stream()
+				.map(tMapper::tWithIdDto).collect(Collectors.toSet()));
 		
 		
 		return context;
