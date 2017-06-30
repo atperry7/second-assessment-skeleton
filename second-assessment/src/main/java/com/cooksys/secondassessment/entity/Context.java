@@ -1,7 +1,9 @@
-package com.cooksys.secondassessment.dto;
+package com.cooksys.secondassessment.entity;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import com.cooksys.secondassessment.dto.TweetWithIdDto;
 
 public class Context {
 	private TweetWithIdDto orginialTweet;

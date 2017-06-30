@@ -9,9 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.cooksys.secondassessment.dto.Context;
 import com.cooksys.secondassessment.dto.TweetCreateSimpleDto;
 import com.cooksys.secondassessment.dto.TweetUserCredOnlyDto;
+import com.cooksys.secondassessment.entity.Context;
 import com.cooksys.secondassessment.entity.HashTag;
 import com.cooksys.secondassessment.entity.Tweet;
 import com.cooksys.secondassessment.entity.TweetUser;
@@ -209,11 +209,10 @@ public class TweetService {
 		context.setOrginialTweet(tMapper.tWithIdDto(tweet));
 		
 		//Traverses one level deep with this method
-		List<Tweet> tweetsTest = tRepo.findByRelatedTweets_Id(id);
+		List<Tweet> tweetsTest = tRepo.findByInReplyTo_RelatedTweets_IdOrderByPostedAsc(id);
 		context.setTweetsAfter(tweetsTest.stream()
 				.map(tMapper::tWithIdDto).collect(Collectors.toSet()));
-		
-		
+
 		return context;
 	}
 	

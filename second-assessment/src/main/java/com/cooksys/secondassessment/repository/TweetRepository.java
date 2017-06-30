@@ -13,10 +13,8 @@ public interface TweetRepository extends JpaRepository<Tweet, Integer> {
 	List<Tweet> findByAuthor_IdOrderByPostedDesc(Integer id);
 	
 	//Finds by two levels deep
-	List<Tweet> findByInReplyTo_RelatedTweets_Id(Integer id);
+	List<Tweet> findByInReplyTo_RelatedTweets_IdOrderByPostedAsc(Integer id);
 	//Finds by one level deep
 	List<Tweet> findByRelatedTweets_Id(Integer id);
-	
-	List<Tweet> findByRelatedTweets_InReplyTo(Integer id);
 	
 }

@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cooksys.secondassessment.dto.Context;
 import com.cooksys.secondassessment.dto.HashTagNoIdDto;
 import com.cooksys.secondassessment.dto.TweetCreateSimpleDto;
 import com.cooksys.secondassessment.dto.TweetSimpleDto;
 import com.cooksys.secondassessment.dto.TweetUserCredOnlyDto;
 import com.cooksys.secondassessment.dto.TweetUserDto;
 import com.cooksys.secondassessment.dto.TweetWithIdDto;
+import com.cooksys.secondassessment.entity.Context;
 import com.cooksys.secondassessment.entity.Tweet;
 import com.cooksys.secondassessment.mapper.HashTagMapper;
 import com.cooksys.secondassessment.mapper.TweetMapper;
