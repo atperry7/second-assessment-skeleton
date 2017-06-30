@@ -46,6 +46,7 @@ public class TagController {
 	public List<TweetWithIdDto> getTag(@PathVariable String label, HttpServletResponse response) {
 		return tService.getTweetsWithTag(label).stream()
 				.filter(tweet -> tweet.getIsDeleted().equals(false))
+				.sorted((t1, t2) -> t2.getPosted().compareTo(t1.getPosted()))
 				.map(tweetMapper::tWithIdDto)
 				.collect(Collectors.toList());
 	}

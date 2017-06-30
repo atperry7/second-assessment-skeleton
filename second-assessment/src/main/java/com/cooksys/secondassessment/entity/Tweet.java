@@ -36,6 +36,9 @@ public class Tweet {
 
 	@ManyToOne
 	private Tweet inReplyTo;
+	
+	@ManyToMany(fetch = FetchType.LAZY)
+	private Set<Tweet> relatedTweets = new HashSet<>();
 
 	@ManyToOne
 	private Tweet repostOf;
@@ -129,6 +132,14 @@ public class Tweet {
 
 	public void setUsersWhoLiked(Set<TweetUser> usersWhoLiked) {
 		this.usersWhoLiked = usersWhoLiked;
+	}
+
+	public Set<Tweet> getRelatedTweets() {
+		return relatedTweets;
+	}
+
+	public void setRelatedTweets(Set<Tweet> relatedTweets) {
+		this.relatedTweets = relatedTweets;
 	}
 
 	@Override

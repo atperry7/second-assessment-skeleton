@@ -15,7 +15,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 public class HashTag {
@@ -32,7 +31,6 @@ public class HashTag {
 	@Column(updatable = false)
 	private Date firstUsed;
 
-	@UpdateTimestamp
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastUsed;
 	

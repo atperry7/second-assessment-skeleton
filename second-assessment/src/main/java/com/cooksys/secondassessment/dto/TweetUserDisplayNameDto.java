@@ -1,7 +1,6 @@
 package com.cooksys.secondassessment.dto;
 
-public class CredentialsNoPwdDto {
-	
+public class TweetUserDisplayNameDto {
 	private String username;
 
 	public String getUsername() {
@@ -11,4 +10,5 @@ public class CredentialsNoPwdDto {
 	public void setUsername(String username) {
 		this.username = username;
 	}
+
 }

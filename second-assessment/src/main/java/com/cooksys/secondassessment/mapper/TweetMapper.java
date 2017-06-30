@@ -7,7 +7,7 @@ import com.cooksys.secondassessment.dto.TweetSimpleDto;
 import com.cooksys.secondassessment.dto.TweetWithIdDto;
 import com.cooksys.secondassessment.entity.Tweet;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {TweetUserMapper.class, ProfileMapper.class, HashTagMapper.class})
 public interface TweetMapper {
 	
 	TweetWithIdDto tWithIdDto(Tweet t);

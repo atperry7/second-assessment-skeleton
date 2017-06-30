@@ -4,9 +4,17 @@ import java.util.Date;
 
 public class TweetUserDto {
 
-	private CredentialsNoPwdDto credentials;
+	private String username;
 	private ProfileDto profile;
 	private Date joined;
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
 	public ProfileDto getProfile() {
 		return profile;
@@ -22,14 +30,6 @@ public class TweetUserDto {
 
 	public void setJoined(Date joined) {
 		this.joined = joined;
-	}
-
-	public CredentialsNoPwdDto getCredentials() {
-		return credentials;
-	}
-
-	public void setCredentials(CredentialsNoPwdDto credentials) {
-		this.credentials = credentials;
 	}
 
 }

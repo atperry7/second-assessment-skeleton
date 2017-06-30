@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cooksys.secondassessment.dto.Context;
 import com.cooksys.secondassessment.dto.HashTagNoIdDto;
 import com.cooksys.secondassessment.dto.TweetCreateSimpleDto;
 import com.cooksys.secondassessment.dto.TweetSimpleDto;
@@ -46,7 +46,7 @@ public class TweetController {
 	public List<TweetWithIdDto> getAll(HttpServletResponse response) {
 		return tService.getAll()
 				.stream()
-				.filter(tweet -> tweet.getIsDeleted().equals(false))
+				.filter(tweet -> tweet.getIsDeleted().equals(false) && tweet.getAuthor().getIsActive().equals(true))
 				.sorted((t1, t2) -> t2.getPosted().compareTo(t1.getPosted()))
 				.map(tMapper::tWithIdDto)
 				.collect(Collectors.toList());
@@ -99,14 +99,14 @@ public class TweetController {
 	}
 	
 	@GetMapping("tweets/{id}/context")
-	public void getContext(@PathVariable Integer id, HttpServletResponse response) {
-		throw new NotYetImplementedException();
+	public Context getContext(@PathVariable Integer id, HttpServletResponse response) {
+		return tService.getContextOfTweetById(id);
 	}
 	
 	@GetMapping("tweets/{id}/replies")
 	public List<TweetWithIdDto> getRepliesToTweetById(@PathVariable Integer id, HttpServletResponse response) {
 		return tService.getDirectReplies(id).stream()
-				.filter(tweet -> tweet.getIsDeleted().equals(false))
+				.filter(tweet -> tweet.getIsDeleted().equals(false) && tweet.getAuthor().getIsActive().equals(true))
 				.sorted((t1, t2) -> t2.getPosted().compareTo(t1.getPosted()))
 				.map(tMapper::tWithIdDto)
 				.collect(Collectors.toList());
@@ -115,7 +115,7 @@ public class TweetController {
 	@GetMapping("tweets/{id}/reposts")
 	public List<TweetWithIdDto> getRepostsForTweetById(@PathVariable Integer id, HttpServletResponse response) {
 		return tService.getDirectReposts(id).stream()
-				.filter(tweet -> tweet.getIsDeleted().equals(false))
+				.filter(tweet -> tweet.getIsDeleted().equals(false) && tweet.getAuthor().getIsActive().equals(true))
 				.sorted((t1, t2) -> t2.getPosted().compareTo(t1.getPosted()))
 				.map(tMapper::tWithIdDto)
 				.collect(Collectors.toList());
@@ -125,6 +125,7 @@ public class TweetController {
 	public List<TweetUserDto> getUserMentionedInTweetById(@PathVariable Integer id, HttpServletResponse response) {
 		return tService.getUsersMentioned(id)
 				.stream()
+				.filter(user -> user.getIsActive().equals(true))
 				.map(tUserMapper::tUserDto)
 				.collect(Collectors.toList());
 	}

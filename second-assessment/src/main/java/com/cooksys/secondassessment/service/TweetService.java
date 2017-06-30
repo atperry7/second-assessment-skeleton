@@ -1,5 +1,6 @@
 package com.cooksys.secondassessment.service;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
@@ -7,12 +8,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.cooksys.secondassessment.dto.Context;
 import com.cooksys.secondassessment.dto.TweetCreateSimpleDto;
 import com.cooksys.secondassessment.dto.TweetUserCredOnlyDto;
 import com.cooksys.secondassessment.entity.HashTag;
 import com.cooksys.secondassessment.entity.Tweet;
 import com.cooksys.secondassessment.entity.TweetUser;
 import com.cooksys.secondassessment.exception.EntityNotFoundException;
+import com.cooksys.secondassessment.exception.InvalidArgumentPassedException;
 import com.cooksys.secondassessment.repository.HashTagRepository;
 import com.cooksys.secondassessment.repository.TweetRepository;
 
@@ -46,7 +49,7 @@ public class TweetService {
 			return tRepo.save(tweetCrea);
 		}
 		
-		return null;
+		throw new InvalidArgumentPassedException();
 	}
 	
 	private Set<TweetUser> parseUsersFromTweet(String contents, Set<TweetUser> tweetUsers) {	
@@ -75,6 +78,7 @@ public class TweetService {
 				log.debug(label);
 				if (hRepo.findByLabelEquals(label) != null) {
 					HashTag hashTag = hRepo.findByLabel(label);
+					hashTag.setLastUsed(Calendar.getInstance().getTime());
 					hashTags.add(hRepo.save(hashTag));
 				} else {
 					HashTag hashTag = new HashTag();
@@ -88,7 +92,12 @@ public class TweetService {
 	}
 
 	public Tweet getById(Integer id) {
-		return tRepo.findOne(id);
+		Tweet tweet = tRepo.findOne(id);
+		if (tweet != null) {
+			return tweet;			
+		}
+		
+		throw new EntityNotFoundException();
 	}
 
 	public Tweet deleteById(Integer id) {
@@ -97,15 +106,26 @@ public class TweetService {
 			tweet.setIsDeleted(true);
 			return tweet;
 		}
-		return null;
+		
+		throw new EntityNotFoundException();
 	}
 
 	public Set<HashTag> getTagsFromTweet(Integer id) {
-		return tRepo.findOne(id).getLabels();
+		Tweet tweet = tRepo.findOne(id); 
+		if (tweet != null) {
+			return tweet.getLabels();
+		}
+		
+		throw new EntityNotFoundException();
 	}
 
 	public Set<TweetUser> getUsersMentioned(Integer id) {
-		return tRepo.findOne(id).getMentions();
+		Tweet tweet = tRepo.findOne(id);
+		if (tweet != null) {
+			return tweet.getMentions();
+		}
+		
+		throw new EntityNotFoundException();
 	}
 
 	public void likeTweetById(TweetUserCredOnlyDto creds, Integer id) {
@@ -116,12 +136,19 @@ public class TweetService {
 		if (tweetUser != null && tweet != null) {
 			tweetUser.getLikedTweets().add(tweet);
 			uService.save(tweetUser);
+		} else {
+			throw new EntityNotFoundException();
 		}
 	
 	}
 
 	public Set<TweetUser> getLikesForTweetById(Integer id) {
-		return tRepo.getOne(id).getUsersWhoLiked();
+		Tweet tweet = tRepo.getOne(id);
+		if (tweet != null) {
+			return tweet.getUsersWhoLiked();
+		}
+		
+		throw new EntityNotFoundException();
 	}
 
 	public Tweet replyToTweetById(TweetCreateSimpleDto simpleDto, Integer id) {
@@ -131,6 +158,7 @@ public class TweetService {
 		if (tweetUser != null && tweetUser.getIsActive().equals(true) && replyToTweet.getIsDeleted().equals(false)) {
 			Tweet tweet = createSimpleTweet(simpleDto);
 			tweet.setInReplyTo(replyToTweet);
+			tweet.getRelatedTweets().add(replyToTweet);
 			return tRepo.save(tweet);
 		}
 		
@@ -138,7 +166,11 @@ public class TweetService {
 	}
 
 	public List<Tweet> getDirectReplies(Integer id) {
-		return tRepo.findByInReplyTo_IdOrderByPostedDesc(id);
+		List<Tweet> tweets = tRepo.findByInReplyTo_IdOrderByPostedDesc(id); 
+		if (tweets != null) {
+			return tweets;
+		}
+		throw new EntityNotFoundException();
 	}
 
 	public Tweet repostTweetById(TweetUserCredOnlyDto creds, Integer id) {
@@ -159,6 +191,23 @@ public class TweetService {
 	}
 	
 	public List<Tweet> getDirectReposts(Integer id) {
-		return tRepo.findByRepostOf_IdOrderByPostedDesc(id);
+		List<Tweet> tweets = tRepo.findByRepostOf_IdOrderByPostedDesc(id);
+		if (tweets != null) {
+			return tweets;
+		}
+		
+		throw new EntityNotFoundException();
 	}
+
+	public Context getContextOfTweetById(Integer id) {
+		Context context = new Context();
+		Tweet tweet = tRepo.findOne(id);
+		
+		tweet.getRelatedTweets().forEach(tweetToCheck -> log.debug("Tweet: " + tweetToCheck.getId()));
+		
+		
+		
+		return context;
+	}
+	
 }

@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.cooksys.secondassessment.dto.TweetUserCredOnlyDto;
@@ -15,14 +13,14 @@ import com.cooksys.secondassessment.entity.Credentials;
 import com.cooksys.secondassessment.entity.Tweet;
 import com.cooksys.secondassessment.entity.TweetUser;
 import com.cooksys.secondassessment.exception.EntityNotFoundException;
+import com.cooksys.secondassessment.exception.UsernameExistsException;
 import com.cooksys.secondassessment.mapper.TweetUserMapper;
 import com.cooksys.secondassessment.repository.TweetRepository;
 import com.cooksys.secondassessment.repository.UserRepository;
 
 @Service
 public class UserService {
-	
-	private Logger log = LoggerFactory.getLogger(getClass());
+
 	private UserRepository userRepository;
 	private TweetRepository tRepository;
 	
@@ -51,7 +49,13 @@ public class UserService {
 				tUser.setIsActive(true);
 				return userRepository.save(tUser);
 			}
+			
+			throw new UsernameExistsException();
 		} 
+		
+		user.getProfile().setFirstName(firstName);
+		user.getProfile().setLastName(lastName);
+		user.getProfile().setPhone(phone);
 		
 		//If all else fails then it creates a new user
 		return userRepository.save(user);
@@ -88,7 +92,12 @@ public class UserService {
 	}
 
 	public TweetUser getUser(String username) {
-		return userRepository.findByCredentials_UsernameEquals(username);
+		TweetUser tweetUser = userRepository.findByCredentials_UsernameEquals(username);
+		if (tweetUser != null) {
+			return tweetUser;
+		}
+		
+		throw new EntityNotFoundException();
 
 	}
 
